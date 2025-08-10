@@ -1,0 +1,246 @@
+openapi: 3.1.0
+info:
+  title: Engineer Management API
+  description: An API performing CRUD operations for ProLUG Engineers
+  version: '0.1'
+servers:
+  - url: http://api.prolug.com/v1
+    description: Production
+paths:
+  /certificates:
+    get:
+      summary: Returns a list of certificates.
+      responses:
+        '200':
+          description: A JSON array of certificate objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Certificate'
+
+  /certificates/{uuid}:
+    get:
+      summary: Get a certificate by UUID
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Certificate object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificate'
+        '404':
+          description: Certificate not found
+    delete:
+      summary: Delete a certificate by UUID
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Certificate deleted successfully
+        '404':
+          description: Certificate not found
+
+  /engineers:
+    post:
+      summary: Create a new engineer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Engineer'
+      responses:
+        '201':
+          description: Engineer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Engineer'
+    get:
+      summary: Get all engineers
+      responses:
+        '200':
+          description: A list of engineers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Engineer'
+
+  /engineers/{uuid}:
+    get:
+      summary: Get an engineer by UUID
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Engineer object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Engineer'
+        '404':
+          description: Engineer not found
+    delete:
+      summary: Delete an engineer by UUID
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Engineer deleted successfully
+        '404':
+          description: Engineer not found
+
+  /engineers/{uuid}/certificates:
+    get:
+      summary: Get all certificates owned by an engineer
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Certificate'
+        '404':
+          description: Engineer not found
+    post:
+      summary: Add a certificate to an engineer
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                certificateUuid:
+                  type: string
+                  format: uuid
+              required:
+                - certificateUuid
+      responses:
+        '201':
+          description: Certificate added to engineer
+        '404':
+          description: Engineer or certificate not found
+
+  /engineers/{uuid}/certificates/{certificateUuid}:
+    delete:
+      summary: Remove a certificate from an engineer
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: certificateUuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Certificate removed from engineer
+        '404':
+          description: Engineer or certificate not found
+components:
+  schemas:
+    Certificate:
+      title: Certificate
+      description: An abstract certificate that engineers can earn
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: A unique identifier for the certficiate
+          format: uuid
+        title:
+          type: string
+          description: The name of the certificate (e.g., AWS Certified Solutions Architect)
+        issuer:
+          type: string
+          description: The organization that issued the certificate
+        issueDate:
+          type: string
+          format: date
+          description: The date the certificate was issued
+        expirationDate:
+          type: string
+          format: date
+          description: When the certificate expires, if applicable
+      required:
+        - title
+        - issuer
+        - issueDate
+    Engineer:
+      title: Engineer
+      description: A ProLug Engineer data model
+      type: object
+      properties:
+        version:
+          type: number
+          default: 1
+        uuid:
+          type: string
+          format: uuid
+        discord:
+          description: The discord username of the engineer
+          type: string
+        twitch:
+          description: The twitch username of the engineer
+          type: string
+        certificates:
+          description: A list of certificate uuids that the engineer has
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - uuid
+      anyOf:
+        - required:
+            - discord
+        - required:
+            - twitch

@@ -1,0 +1,80 @@
+  {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+
+    "Certificate": {
+      "title": "Certificate",
+      "description": "An abstract certificate that engineers can earn",
+      "type": "object",
+
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "description": "A unique identifier for the certficiate",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "description": "The name of the certificate (e.g., AWS Certified Solutions Architect)"
+        },
+        "issuer": {
+          "type": "string",
+          "description": "The organization that issued the certificate"
+        },
+        "issueDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The date the certificate was issued"
+        },
+        "expirationDate": {
+          "type": "string",
+          "format": "date",
+          "description": "When the certificate expires, if applicable"
+        }
+      },
+
+
+      "required": ["title", "issuer", "issueDate"]
+    },
+
+    "Engineer": {
+      "title": "Engineer",
+      "description": "A ProLug Engineer data model",
+      "type": "object",
+
+      "properties": {
+        "version": {
+            "type": "number",
+            "default": 1
+        },
+        "uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "discord": {
+          "description": "The discord username of the engineer",
+          "type": "string"
+        },
+        "twitch": {
+          "description": "The twitch username of the engineer",
+          "type": "string"
+        },
+        "certificates": {
+          "description": "A list of certificate uuids that the engineer has",
+          "type": "array",
+          "items": {
+              "type": "string",
+              "format": "uuid"
+          }
+        }
+      },
+
+      "required": ["uuid"],
+
+      "anyOf": [
+        {"required": ["discord"]},
+        {"required": ["twitch"]}
+      ]
+    }
+  }
+}

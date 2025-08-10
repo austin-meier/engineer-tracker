@@ -1,0 +1,25 @@
+openapi: 3.1.0
+info:
+  title: Engineer Management API
+  description: An API performing CRUD operations for ProLUG Engineers
+  version: '0.1'
+servers:
+  - url: http://api.prolug.com/v1
+    description: Production
+paths:
+  /certificates:
+    get:
+      summary: Returns a list of certificates.
+      responses:
+        '200':
+          description: A JSON array of certificate objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Certificate'
+components:
+  schemas:
+    $ref: './schema.json#/$defs'
+
